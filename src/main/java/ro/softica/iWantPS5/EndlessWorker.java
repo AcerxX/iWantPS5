@@ -27,10 +27,16 @@ public class EndlessWorker extends Thread {
             System.out.println(LocalDateTime.now() + " - Searching...");
 
             try {
-                detectPS5OnEmag();
-                detectPS5OnOrange();
-                detectPS5OnAltex();
-                detectPS5OnMediaGalaxy();
+                var now = LocalDateTime.now();
+
+                if (now.getHour() > 7) {
+                    detectPS5OnEmag();
+                    detectPS5OnOrange();
+                    detectPS5OnAltex();
+                    detectPS5OnMediaGalaxy();
+                } else {
+                    System.out.println("SKIPPING AT NIGHT!");
+                }
             } catch (Throwable t) {
                 t.printStackTrace();
             }
@@ -40,10 +46,9 @@ public class EndlessWorker extends Thread {
         }
     }
 
-    private void detectPS5OnEmag() throws IOException {
+    private void detectPS5OnEmag() throws IOException, InterruptedException {
         String link = "https://www.emag.ro/consola-playstation-5-so-9396406/pd/DNKW72MBM/";
         Document doc = Jsoup.connect(link)
-                .userAgent("Opera")
                 .get();
         Elements addToCartButtons = doc.select(".yeahIWantThisProduct");
 
@@ -54,7 +59,7 @@ public class EndlessWorker extends Thread {
         }
     }
 
-    private void detectPS5OnOrange() throws IOException {
+    private void detectPS5OnOrange() throws IOException, InterruptedException {
         String link = "https://www.orange.ro/magazin-online/obiecte-conectate/consola-playstation-5";
         Document doc = Jsoup.connect(link)
                 .userAgent("Opera")
@@ -68,35 +73,35 @@ public class EndlessWorker extends Thread {
         }
     }
 
-    private void detectPS5OnAltex() throws IOException {
+    private void detectPS5OnAltex() throws IOException, InterruptedException {
         String link = "https://altex.ro/console-ps5/cpl/";
         Document doc = Jsoup.connect(link)
                 .userAgent("Opera")
-                .get();;
+                .get();
         Elements addToCartButtons = doc.select("div.text-alertYellow");
 
         if (addToCartButtons.isEmpty()) {
-             yellPS5Found(link, doc, "@everyone PS5 GASIT PE ALTEX!!!", "PS5 gasit pe ALTEX");
-             yellPS5Found(link, doc, "@everyone PS5 GASIT PE ALTEX!!!", "PS5 gasit pe ALTEX");
-             yellPS5Found(link, doc, "@everyone PS5 GASIT PE ALTEX!!!", "PS5 gasit pe ALTEX");
+            yellPS5Found(link, doc, "@everyone PS5 GASIT PE ALTEX!!!", "PS5 gasit pe ALTEX");
+            yellPS5Found(link, doc, "@everyone PS5 GASIT PE ALTEX!!!", "PS5 gasit pe ALTEX");
+            yellPS5Found(link, doc, "@everyone PS5 GASIT PE ALTEX!!!", "PS5 gasit pe ALTEX");
         }
     }
 
-    private void detectPS5OnMediaGalaxy() throws IOException {
+    private void detectPS5OnMediaGalaxy() throws IOException, InterruptedException {
         String link = "https://mediagalaxy.ro/console-ps5/cpl/";
         Document doc = Jsoup.connect(link)
                 .userAgent("Opera")
-                .get();;
+                .get();
         Elements addToCartButtons = doc.select("div.text-alertYellow");
 
         if (addToCartButtons.isEmpty()) {
-             yellPS5Found(link, doc, "@everyone PS5 GASIT PE MEDIA GALAXY!!!", "PS5 gasit pe MEDIA GALAXY");
-             yellPS5Found(link, doc, "@everyone PS5 GASIT PE MEDIA GALAXY!!!", "PS5 gasit pe MEDIA GALAXY");
-             yellPS5Found(link, doc, "@everyone PS5 GASIT PE MEDIA GALAXY!!!", "PS5 gasit pe MEDIA GALAXY");
+            yellPS5Found(link, doc, "@everyone PS5 GASIT PE MEDIA GALAXY!!!", "PS5 gasit pe MEDIA GALAXY");
+            yellPS5Found(link, doc, "@everyone PS5 GASIT PE MEDIA GALAXY!!!", "PS5 gasit pe MEDIA GALAXY");
+            yellPS5Found(link, doc, "@everyone PS5 GASIT PE MEDIA GALAXY!!!", "PS5 gasit pe MEDIA GALAXY");
         }
     }
 
-    private void yellPS5Found(String link, Document doc, String s, String s2) throws IOException {
+    private void yellPS5Found(String link, Document doc, String s, String s2) throws IOException, InterruptedException {
         webhook.setContent(s);
         webhook.setAvatarUrl("https://s13emagst.akamaized.net/products/32502/32501277/images/res_8964c0a2056c6f1fc96531e6f5721fb2.jpg");
         webhook.setUsername("iWantPS5");
@@ -119,6 +124,7 @@ public class EndlessWorker extends Thread {
         System.out.println(s2);
         System.out.println(s2);
         System.out.println(s2);
+        sleep(1000);
     }
 
 
