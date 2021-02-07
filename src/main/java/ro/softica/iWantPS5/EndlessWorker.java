@@ -25,30 +25,33 @@ public class EndlessWorker extends Thread {
     public void run() {
         while (true) {
             System.out.println(LocalDateTime.now() + " - Searching...");
+            var sleepTime = (long) Math.max(30000, 60000 * Math.random());
 
             try {
-                var now = LocalDateTime.now();
-
-                if (now.getHour() > 7) {
+                if (LocalDateTime.now().getHour() >= 8) {
                     detectPS5OnEmag();
                     detectPS5OnOrange();
                     detectPS5OnAltex();
                     detectPS5OnMediaGalaxy();
                 } else {
-                    System.out.println("SKIPPING AT NIGHT!");
+                    System.out.println(LocalDateTime.now() + " - SKIPPING AT NIGHT!");
+                    sleepTime = 3600000;
                 }
             } catch (Throwable t) {
                 t.printStackTrace();
             }
 
-            System.out.println(LocalDateTime.now() + " - None found! Sleeping...");
-            sleep(60000);
+            System.out.println(LocalDateTime.now() + " - None found! Sleeping " + sleepTime + " ms...");
+            sleep(sleepTime);
         }
     }
 
     private void detectPS5OnEmag() throws IOException, InterruptedException {
         String link = "https://www.emag.ro/consola-playstation-5-so-9396406/pd/DNKW72MBM/";
         Document doc = Jsoup.connect(link)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36")
+                .referrer("http://www.google.com")
+                .followRedirects(true)
                 .get();
         Elements addToCartButtons = doc.select(".yeahIWantThisProduct");
 
@@ -62,7 +65,11 @@ public class EndlessWorker extends Thread {
     private void detectPS5OnOrange() throws IOException, InterruptedException {
         String link = "https://www.orange.ro/magazin-online/obiecte-conectate/consola-playstation-5";
         Document doc = Jsoup.connect(link)
-                .userAgent("Opera")
+
+
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36")
+                .referrer("http://www.google.com")
+                .followRedirects(true)
                 .get();
         Elements addToCartButtons = doc.select("#productprice");
 
@@ -125,34 +132,5 @@ public class EndlessWorker extends Thread {
         System.out.println(s2);
         System.out.println(s2);
         sleep(1000);
-    }
-
-
-    private void testEmag() throws IOException {
-        String link = "https://www.emag.ro/telefon-mobil-samsung-galaxy-s21-dual-sim-128gb-8gb-ram-5g-phantom-grey-sm-g991bzadeue/pd/DPLGTDMBM/";
-        Document doc = Jsoup.connect(link).get();
-        Elements addToCartButtons = doc.select(".yeahIWantThisProduct");
-
-        if (addToCartButtons.isEmpty()) {
-            webhook.setContent("@AcerX Crawler-ul nu mai merge pe EMAG!");
-            webhook.setAvatarUrl("https://edsurge.imgix.net/uploads/post/image/10801/shutterstock_493677196-1519849569.jpg");
-            webhook.setUsername("iWantPS5");
-            webhook.setTts(false);
-            webhook.execute();
-        }
-    }
-
-    private void testOrange() throws IOException {
-        String link = "https://www.orange.ro/magazin-online/obiecte-conectate/controller-fara-fir-dualsense-ps5";
-        Document doc = Jsoup.connect(link).get();
-        Elements addToCartButtons = doc.select("#productprice");
-
-        if (addToCartButtons.isEmpty()) {
-            webhook.setContent("@AcerX Crawler-ul nu mai merge pe Orange!");
-            webhook.setAvatarUrl("https://edsurge.imgix.net/uploads/post/image/10801/shutterstock_493677196-1519849569.jpg");
-            webhook.setUsername("iWantPS5");
-            webhook.setTts(false);
-            webhook.execute();
-        }
     }
 }
